@@ -38,12 +38,11 @@ function confirmar() {
     return;
   }
 
-  // Bloqueia confirmações após a sexta-feira 03/06 às 23:59
-  const limite = new Date("2026-06-03T23:59:00");
+  const limite = new Date("2026-07-04T23:59:00");
   const agora = new Date();
 
   if (agora > limite) {
-    alert("Prazo de confirmação encerrado (até 03/06 23:59)." );
+    alert("Prazo de confirmação encerrado (até 04/07 23:59)." );
     return;
   }
 
