@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirmação de Presença</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="hero__badge">Convite</div>
+      <h1 class="hero__title">Aniversário da Carol</h1>
+<p class="hero__subtitle">
+        <span class="hero__label">Data:</span> 05 de Julho
+        <br />
+        <span class="hero__label">Horário:</span> 13:00
+      </p>
+    </header>
+
+    <main class="container">
+      <section class="card card--confirmacao">
+        <h2 class="card__title">Confirme sua presença</h2>
+        <p class="card__text">Digite seu nome e clique no botão para confirmar.</p>
+
+        <div class="confirmacao">
+          <input type="text" id="nome" placeholder="Digite seu nome" maxlength="50" autocomplete="name" />
+          <button type="button" onclick="confirmar()" class="btn btn--primary">Confirmar Presença</button>
+        </div>
+      </section>
+
+      <section class="card card--lista">
+        <h2 class="card__title">Lista de confirmados</h2>
+        <p class="card__text">A lista completa fica disponível apenas para o aniversariante.</p>
+
+        <div class="actions">
+          <button type="button" onclick="toggleLista()" class="btn btn--ghost" id="btnVerConfirmados">Ver Confirmados</button>
+          <button type="button" onclick="sairAniversariante()" class="btn btn--ghost hidden" id="btnSair">Sair</button>
+        </div>
+
+        <div id="authArea" class="auth hidden" aria-live="polite">
+          <div class="auth__header">
+            <h3 class="auth__title">Acesso do aniversariante</h3>
+            <p class="auth__hint">Informe login e senha.</p>
+          </div>
+
+          <div class="auth__form">
+            <label class="field">
+              <span class="field__label">Usuário</span>
+              <input type="text" id="login" placeholder="Usuário" autocomplete="username" />
+            </label>
+            <label class="field">
+              <span class="field__label">Senha</span>
+              <input type="password" id="senha" placeholder="Senha" autocomplete="current-password" />
+            </label>
+
+            <div class="auth__buttons">
+              <button type="button" onclick="loginAniversariante()" class="btn btn--primary">Entrar</button>
+              <button type="button" onclick="fecharAuth()" class="btn btn--ghost">Cancelar</button>
+            </div>
+            <p id="authMsg" class="auth__msg" role="status"></p>
+          </div>
+        </div>
+
+        <div id="abaLista" class="hidden" aria-live="polite">
+          <div class="listaHeader">
+            <h3 class="listaHeader__title">Pessoas que confirmaram</h3>
+            <span class="listaHeader__count" id="listaCount">0</span>
+          </div>
+
+          <ul id="lista" class="lista"></ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
