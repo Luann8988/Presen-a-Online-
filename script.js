@@ -27,13 +27,13 @@ function confirmar() {
   let nome = normalizarNome(input.value);
 
   if (!nome) {
-    alert("Digite seu nome!");
+    showNotification("Por favor, digite seu nome.", "error");
     input.focus();
     return;
   }
 
   if (nome.length > 50) {
-    alert("Seu nome está muito grande (máx. 50 caracteres)." );
+    showNotification("O nome está muito grande (máx. 50 caracteres).", "error");
     input.focus();
     return;
   }
@@ -42,7 +42,7 @@ function confirmar() {
   const agora = new Date();
 
   if (agora > limite) {
-    alert("Prazo de confirmação encerrado (até 04/07 23:59)." );
+    showNotification("Prazo de confirmação encerrado (até 04/07 23:59).", "error");
     return;
   }
 
@@ -65,7 +65,7 @@ function confirmar() {
 
   input.value = "";
   input.focus();
-  alert(`${nome} está confirmado(a) ✅`);
+  showNotification(`${nome} está confirmado(a) ✅`, "success");
 }
 
 function atualizarLista() {
@@ -156,12 +156,10 @@ function loginAniversariante() {
     if (authArea) authArea.classList.add("hidden");
     if (authMsg) authMsg.textContent = "Acesso liberado ✅";
 
-    if (btnSair) btnSair.classList.remove("hidden");
-
-    if (aba) {
-      aba.classList.remove("hidden");
-      atualizarLista();
-    }
+    // Apenas exibe a lista, sem modificá-la
+    if (btnSair) btnSair.classList.remove("hidden"); // Mostra o botão de sair
+    if (aba) aba.classList.remove("hidden"); // Mostra a área da lista
+    atualizarLista(); // Atualiza a exibição da lista com todos os confirmados
     return;
   }
 
@@ -189,12 +187,12 @@ function excluirConfirmado(index) {
   const p = confirmados[index];
   if (!p) return;
 
-  const ok = confirm(`Excluir ${p.nome} da lista?`);
-  if (!ok) return;
-
-  confirmados.splice(index, 1);
-  salvar();
-  atualizarLista();
+  showConfirmationDialog(`Deseja realmente excluir "${p.nome}" da lista?`, () => {
+    confirmados.splice(index, 1);
+    salvar();
+    atualizarLista();
+    showNotification(`"${p.nome}" foi excluído(a).`, "info");
+  });
 }
 function escapeHtml(str) {
   return String(str)
@@ -205,6 +203,81 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
+function showNotification(message, type = "info") {
+  const container = document.body;
+  const notification = document.createElement("div");
+  notification.textContent = message;
+
+  const styles = {
+    position: "fixed",
+    top: "20px",
+    right: "20px",
+    padding: "12px 20px",
+    borderRadius: "6px",
+    color: "#fff",
+    fontSize: "14px",
+    zIndex: "2000",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+    opacity: "0",
+    transform: "translateX(100%)",
+    transition: "transform 0.3s ease-out, opacity 0.3s ease-out",
+  };
+
+  const typeColors = {
+    success: "#28a745",
+    error: "#dc3545",
+    info: "#17a2b8",
+  };
+
+  styles.backgroundColor = typeColors[type] || typeColors.info;
+
+  Object.assign(notification.style, styles);
+
+  container.appendChild(notification);
+
+  // Força o navegador a aplicar o estado inicial antes de animar
+  setTimeout(() => {
+    notification.style.opacity = "1";
+    notification.style.transform = "translateX(0)";
+  }, 10);
+
+  setTimeout(() => {
+    notification.style.opacity = "0";
+    notification.style.transform = "translateX(100%)";
+    notification.addEventListener("transitionend", () => notification.remove());
+  }, 3500);
+}
+
+function showConfirmationDialog(message, onConfirm) {
+  const overlay = document.createElement("div");
+  overlay.innerHTML = `
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 3000;">
+      <div style="background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; max-width: 320px;">
+        <p style="margin: 0 0 20px; font-size: 16px; color: #333;">${escapeHtml(message)}</p>
+        <div style="display: flex; justify-content: center; gap: 12px;">
+          <button id="confirm-dialog-cancel" class="btn btn--small">Cancelar</button>
+          <button id="confirm-dialog-ok" class="btn btn--danger btn--small">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const btnOk = document.getElementById("confirm-dialog-ok");
+  const btnCancel = document.getElementById("confirm-dialog-cancel");
+
+  btnOk.onclick = () => {
+    onConfirm();
+    overlay.remove();
+  };
+
+  btnCancel.onclick = () => {
+    overlay.remove();
+  };
+
+  btnCancel.focus();
+}
 
 // Carrega ao abrir a página
 (function init() {
@@ -215,4 +288,3 @@ function escapeHtml(str) {
     btnSair.classList.toggle("hidden", !isAutenticado());
   }
 })();
-
